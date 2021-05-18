@@ -46,7 +46,7 @@ class BuyTicket implements Runnable{
         //使用lock实现锁
 
         try {
-            lock.lock();
+//            lock.lock();
             //判断是否有票
             if (tickets <= 0){
                 flag = false;
@@ -54,7 +54,7 @@ class BuyTicket implements Runnable{
             }
             System.out.println(Thread.currentThread().getName() + "拿到" + tickets--);
         } finally {
-            lock.unlock();
+//            lock.unlock();
         }
         //模拟延时
         Thread.sleep(300);
