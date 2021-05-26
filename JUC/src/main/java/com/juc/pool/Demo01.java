@@ -25,12 +25,18 @@ public class Demo01 {
                 new LinkedBlockingQueue<>(3),//阻塞队列，自定义队列长度
                 Executors.defaultThreadFactory(),//线程创建工厂
                 new ThreadPoolExecutor.DiscardOldestPolicy()//拒绝策略
+                //ThreadPoolExecutor.AbortPolicy//队列满了，还有人进来，不处理这个人，抛出异常
+                //ThreadPoolExecutor.CallerRunsPolicy//哪来的去哪里
+                //ThreadPoolExecutor.DiscardPolicy//队列满了，丢掉任务，不抛出异常
+                //ThreadPoolExecutor.DiscardOldestPolicy//队列满了，尝试和最早的线程竞争，也不会抛出异常
+
         );
         CountDownLatch countDownLatch = new CountDownLatch(9);//设置初始值
 
 
 
-        try {long start = System.currentTimeMillis();
+        try {
+            long start = System.currentTimeMillis();
             for (int i = 0; i < 9; i++) {
                 myService.submit(() -> {
                     System.out.println(Thread.currentThread().getName());
