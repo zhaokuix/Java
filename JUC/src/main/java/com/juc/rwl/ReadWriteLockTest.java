@@ -9,7 +9,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * 读写锁 ReadWriteLock，细粒度地控制锁，提高效率
- * Lock readLock()//读锁（共享锁），读取时所有线程都可以读
+ * Lock readLock()//读锁（共享锁），读取时所有线程都可以读，锁是防止读到写的中间值。
  * Lock writeLock()//写锁（独占锁），写入时只能有一个线程写入
  */
 public class ReadWriteLockTest {
