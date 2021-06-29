@@ -40,53 +40,54 @@ public class Alibaba {
             {
                 if(f.isDirectory())
                     func(f);
-
                 if(f.isFile())
                 {
                     String bodies = getBodies(f);
                     JSONObject res = getJsonObject(bodies);
-                    assert res != null;
-                    JSONArray array = res.getJSONArray("result");
-                    String name = "";
-                    for (int i = 0; i < array.size(); i++) {
-                        JSONObject json = array.getJSONObject(i);
-                        JSONObject text = json.getJSONObject("text");
-                        String context = text.getString("content");
-                        Double prob = text.getDouble("prob");
-                        String pre2Char = context.substring(0,1);
-                        if (!pre2Char.equals("联") && !pre2Char.equals("云")){
-                            if (prob < 0.5 && i < array.size() - 1){
-                                continue;
+                    if (res != null){
+                        JSONArray array = res.getJSONArray("result");
+                        String name = "";
+                        for (int i = 0; i < array.size(); i++) {
+                            JSONObject json = array.getJSONObject(i);
+                            JSONObject text = json.getJSONObject("text");
+                            String context = text.getString("content");
+                            Double prob = text.getDouble("prob");
+                            String pre2Char = context.substring(0,1);
+                            if (!pre2Char.equals("联") && !pre2Char.equals("云")){
+                                if (prob < 0.5 && i < array.size() - 1){
+                                    continue;
+                                }
+                                if (prob < 0.5){
+                                    String[] strArray=f.getName().split("\\.", 2);
+                                    name = strArray[0];
+                                    System.out.println("识别率低：" + context);
+                                }else {
+                                    name = context;
+                                }
+                                break;
                             }
-                            if (prob < 0.5){
-                                String[] strArray=f.getName().split("\\.", 2);
-                                name = strArray[0];
-                                System.out.println("识别率低：" + context);
-                            }else {
-                                name = context;
+                        }
+                        //处理后缀名
+                        String path = f.getParent();
+                        String oldName = f.getName();
+                        String[] strArray = oldName.split("\\.", 2);
+                        String type = strArray[1];
+                        String nameType = name+"."+type;
+                        String newFile = path+"\\"+ nameType;
+                        File newName = new File(newFile);
+                        if(f.renameTo(newName)) {
+                            System.out.println(oldName + " 已重命名为：" + newName.getName());
+                        } else {
+                            String newFile2=path+"\\"+ name + "2." + type;
+                            File newName2 = new File(newFile2);
+                            if(f.renameTo(newName2)) {
+                                System.out.println(oldName + " 已重命名2: " + newName2.getName());
+                            }else{
+                                System.out.println("Error" + newName2.getName());
                             }
-                            break;
                         }
                     }
-                    //处理后缀名
-                    String path = f.getParent();
-                    String oldName = f.getName();
-                    String[] strArray = oldName.split("\\.", 2);
-                    String type = strArray[1];
-                    name = name+"."+type;
-                    String newFile=path+"\\"+ name;
-                    File newName = new File(newFile);
-                    if(f.renameTo(newName)) {
-                        System.out.println(oldName + " 已重命名为：" + newName.getName());
-                    } else {
-                        String newFile2=path+"\\"+ name + "2";
-                        File newName2 = new File(newFile2);
-                        if(f.renameTo(newName2)) {
-                            System.out.println(oldName + " 已重命名2: " + newName2.getName());
-                        }else{
-                            System.out.println("Error" + newName2.getName());
-                        }
-                    }
+
                 }
             }
     }
@@ -102,10 +103,21 @@ public class Alibaba {
              * https://github.com/aliyun/api-gateway-demo-sign-java/blob/master/pom.xml
              */
             HttpResponse response = HttpUtils.doPost(host, path, method, headers, queries, bodies);
-//            System.out.println(response.toString());
+            try {
+                Thread.currentThread().sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             //获取response的body
-            String result = EntityUtils.toString(response.getEntity());
-            return JSONObject.parseObject(result);
+            String result;
+            result = EntityUtils.toString(response.getEntity());
+            try{
+                return JSONObject.parseObject(result);
+            }catch (Exception e){
+                System.out.println("Error: 识别错误");
+                return null;
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
