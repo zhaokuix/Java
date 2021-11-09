@@ -1,0 +1,14 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        cache:
+          use_second_level_cache: true
+          use_query_cache: true
+          region:
+            factory_class: org.redisson.hibernate.RedissonRegionFactory
+          hibernate.javax.cache.missing_cache_strategy: create
+          redisson:
+            fallback: true
+            config: redisson.yaml
