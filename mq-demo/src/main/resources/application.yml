@@ -1,0 +1,12 @@
+server:
+  port: 8082
+hq:
+  exchangeName: Pm_Platform    #要监听的exchange名
+  queueName: proinfo_topic     #要监听的队列名
+  tableName: PM_PROJECT_INFO    #要监听的数据库表名
+  rabbitmq:
+    enable: true
+    addresses: 10.16.240.143:30001
+    username: guest
+    password: guest
+
